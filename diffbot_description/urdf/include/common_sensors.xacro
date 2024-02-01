@@ -18,23 +18,23 @@
 
   <link name="${prefix}_laser_link">
     <xacro:if value="${mesh != '' }" >
-    <visual>
-      <origin xyz="0 0 0" rpy="0 0 ${pi}"/>
-      <geometry>
-        <mesh filename="package://${package_name}/meshes/sensors/${mesh}" />
-      </geometry>
-      <material name="dark_grey"/>
-    </visual>
-  </xacro:if>
-  <xacro:if value="${mesh == '' }" >
-    <visual>
-      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <visual>
+        <origin xyz="0 0 0" rpy="0 0 ${pi}"/>
         <geometry>
-        <cylinder radius="${sensor_prop['laser']['radius']}" length="${sensor_prop['laser']['length']}"/>
-      </geometry>
-      <material name="red"/>
-    </visual>
-  </xacro:if>
+          <mesh filename="package://${package_name}/meshes/sensors/${mesh}" />
+        </geometry>
+        <material name="dark_grey"/>
+      </visual>
+    </xacro:if>
+    <xacro:if value="${mesh == '' }" >
+      <visual>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+          <geometry>
+          <cylinder radius="${sensor_prop['laser']['radius']}" length="${sensor_prop['laser']['length']}"/>
+        </geometry>
+        <material name="red"/>
+      </visual>
+    </xacro:if>
     <collision>
       <origin xyz="0 0 0" rpy="0 0 0"/>
       <geometry>
@@ -205,9 +205,10 @@
     </xacro:if>
     <xacro:if value="${mesh == '' }" >
       <visual>
-        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <origin xyz="-0.07 0 0.01" rpy="0 0 0"/>
         <geometry>
-          <cylinder radius="${sensor_prop['imu']['radius']}" length="${sensor_prop['imu']['length']}"/>
+          <!-- <cylinder radius="${sensor_prop['imu']['radius']}" length="${sensor_prop['imu']['length']}"/> -->
+          <box size="${sensor_prop['imu']['size']['x']} ${sensor_prop['imu']['size']['y']} ${sensor_prop['imu']['size']['z']}"/>
         </geometry>
         <material name="red"/>
       </visual>
@@ -221,7 +222,7 @@
     <xacro:box_inertia m="${sensor_prop['imu']['mass']}"
                        x="${sensor_prop['imu']['size']['x']}"
                        y="${sensor_prop['imu']['size']['y']}"
-                       z="${sensor_prop['imu']['size']['y']}" />
+                       z="${sensor_prop['imu']['size']['z']}" />
     <!-- Todo delete visual>
       <origin xyz="0 0 0" rpy="0 0 0"/>
       <geometry>
@@ -246,21 +247,40 @@
     <child link="imu_link"/>
   </joint>
 
-  <gazebo reference="imu_link">
+  <!-- <gazebo reference="imu_link">
     <sensor type="imu" name="my_imu">
     <always_on>true</always_on>
-    <!-- Publish at 30 hz -->
     <update_rate>30</update_rate>
     <plugin name="my_imu_plugin" filename="libgazebo_ros_imu_sensor.so">
       <ros>
-        <!-- Will publish to /imu/data -->
         <namespace>/imu</namespace>
         <argument>~/out:=data</argument>
       </ros>
-      <!-- frame_name ommited, will be "my_link" -->
     </plugin>
     </sensor>
+  </gazebo> -->
+
+  <gazebo reference="imu_link">
+    <gravity>true</gravity>
+    <sensor name="my_imu" type="imu">
+      <always_on>true</always_on>
+      <update_rate>100</update_rate>
+      <visualize>true</visualize>
+      <topic>__default_topic__</topic>
+      <plugin filename="libgazebo_ros_imu_sensor.so" name="imu_plugin">
+        <topicName>imu</topicName>
+        <bodyName>imu_link</bodyName>
+        <updateRateHZ>100.0</updateRateHZ>
+        <gaussianNoise>0.05</gaussianNoise>
+        <xyzOffset>0 0 0</xyzOffset>
+        <rpyOffset>0 0 0</rpyOffset>
+        <frameName>imu_link</frameName>
+        <initialOrientationAsReference>false</initialOrientationAsReference>
+      </plugin>
+      <pose>0 0 0 0 0 0</pose>
+    </sensor>
   </gazebo>
+
 </xacro:macro>
 
 
