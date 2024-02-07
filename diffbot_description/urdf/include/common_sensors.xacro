@@ -268,7 +268,7 @@
       <visualize>true</visualize>
       <topic>__default_topic__</topic>
       <plugin filename="libgazebo_ros_imu_sensor.so" name="imu_plugin">
-        <topicName>imu</topicName>
+        <topicName>/diffbot/imu</topicName>
         <bodyName>imu_link</bodyName>
         <updateRateHZ>100.0</updateRateHZ>
         <gaussianNoise>0.05</gaussianNoise>
